@@ -1,19 +1,11 @@
 import { FastifyPluginCallback } from 'fastify'
 import { decode } from '../services/idEncoding';
+import { getUrlRequest, postUrlRequest } from '../schemas';
 
 const root: FastifyPluginCallback =  (fastify, opts, done) => {
   fastify.get<{
     Params: { urlId: string };
-  }>('/s/:urlId', {
-    schema: {
-      params: {
-        type: 'object',
-        properties: {
-          urlId: { type: 'string' }
-        }
-      }
-    }
-  },(request, reply) => {
+  }>('/s/:urlId', getUrlRequest, (request, reply) => {
     const { urlId } = request.params;
     request.log.info(`Received id: ${urlId}`);
     const id = decode(urlId);
@@ -23,16 +15,7 @@ const root: FastifyPluginCallback =  (fastify, opts, done) => {
 
   fastify.post<{
     Body: { url: string };
-  }>('/s', {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          url: { type: 'string' }
-        }
-      }
-    }
-  },(request, reply) => {
+  }>('/s', postUrlRequest, (request, reply) => {
     const { url } = request.body;
     request.log.info(`Received url: ${url}`);
     const id = 123456789;
