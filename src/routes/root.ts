@@ -4,7 +4,7 @@ import { getUrlRequest, postUrlRequest } from '../dtos';
 import { db } from '../db/planetscale';
 import { shortURLsTable } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import { isValidUrl } from '../services/urlValidation';
+import { getValidUrl } from '../services/urlValidation';
 
 const root: FastifyPluginCallback =  (fastify, opts, done) => {
   fastify.get<{
@@ -24,17 +24,17 @@ const root: FastifyPluginCallback =  (fastify, opts, done) => {
     Body: { url: string };
   }>('/s', postUrlRequest, async (request, reply) => {
     const { url } = request.body;
-    if(!isValidUrl(url)) {
+    const validUrl = getValidUrl(url);
+    if(!validUrl) {
       return reply.badRequest('Invalid URL');
     }
-    const rows = await db.select({ id: shortURLsTable.id }).from(shortURLsTable).where(eq(shortURLsTable.url, url));
+    const rows = await db.select({ id: shortURLsTable.id }).from(shortURLsTable).where(eq(shortURLsTable.url, validUrl));
     if (rows.length > 0) {
       const { id } = rows[0];
       const encodedId = encode(id);
       return reply.send({ shortUrl: `${request.hostname}/s/${encodedId}` });
     }
     const res = await db.insert(shortURLsTable).values({ url });
-    fastify.log.info(res[0].insertId)
     const { insertId } = res[0];
     const encodedId = encode(insertId);
     reply.send({ shortUrl: `${request.hostname}/s/${encodedId}`});

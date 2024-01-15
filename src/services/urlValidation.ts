@@ -1,9 +1,8 @@
-export function isValidUrl(url: string) {
+export function getValidUrl(url: string) {
     try {
-        new URL(url);
-        return true;
+        return new URL(url).toString();
     }
     catch (_) {
-        return false;
+        return "";
     }
 }
