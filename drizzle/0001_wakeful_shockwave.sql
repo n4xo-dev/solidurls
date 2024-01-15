@@ -1,0 +1,1 @@
+ALTER TABLE `short_urls` MODIFY COLUMN `url` varchar(1024) NOT NULL;
