@@ -33,10 +33,10 @@ const root: FastifyPluginCallback =  (fastify, opts, done) => {
       const encodedId = encode(id);
       return reply.send({ shortUrl: `${request.hostname}/s/${encodedId}` });
     }
-    await db.insert(shortURLsTable).values({ url });
-    const results = await db.select({ id: shortURLsTable.id }).from(shortURLsTable).where(eq(shortURLsTable.url, url));
-    const { id } = results[0];
-    const encodedId = encode(id);
+    const res = await db.insert(shortURLsTable).values({ url });
+    fastify.log.info(res[0].insertId)
+    const { insertId } = res[0];
+    const encodedId = encode(insertId);
     reply.send({ shortUrl: `${request.hostname}/s/${encodedId}`});
   })
   
