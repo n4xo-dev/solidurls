@@ -1,4 +1,4 @@
-export const getUrlRequest = {
+export const getUrlSchema = {
   schema: {
     params: {
       type: 'object',
@@ -9,12 +9,20 @@ export const getUrlRequest = {
   }
 };
 
-export const postUrlRequest = {
+export const postUrlSchema = {
   schema: {
     body: {
       type: 'object',
       properties: {
         url: { type: 'string' }
+      }
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          shortUrl: { type: 'string' }
+        }
       }
     }
   }
